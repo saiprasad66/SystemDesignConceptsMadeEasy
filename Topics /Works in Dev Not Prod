@@ -113,3 +113,6 @@ Security is lenient in dev, strict in prod — and that breaks code.
 If asked in an interview, this is the perfect answer:
 “Works in dev but fails in prod” happens because dev and prod environments differ in configuration, data volume, traffic patterns, security restrictions, network latency, and dependency behavior. 
 These differences expose assumptions in the code and system design that were never tested in development.
+
+🧠 One‑Line Mental Model (Memorize This)
+“If dev and prod behave differently, the problem is not code — it’s assumptions.”
