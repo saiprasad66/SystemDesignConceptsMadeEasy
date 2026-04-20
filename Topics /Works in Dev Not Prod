@@ -1,0 +1,115 @@
+1️⃣ Configuration Differences
+Common issues:
+Missing or incorrect environment variables
+Different feature flags
+Different limits (timeouts, memory, CPU)
+Secrets not configured the same way
+Hard‑coded values in dev
+
+Example:
+Dev: timeout = 60s ✅
+Prod: timeout = 5s ❌ → requests fail
+
+💡 Insight
+Configuration is code — when unmanaged, it breaks production.
+
+
+2️⃣ Environment Parity Problems (Very Common)
+Dev ≠ Prod in:
+Infrastructure size
+Networking
+Security policies
+Load balancers
+Firewalls / NAT / proxies
+
+Example:
+Dev uses localhost DB
+Prod uses remote DB with latency
+App wasn’t designed for latency → fails
+
+💡 Key truth
+Code that works without network latency often fails when real latency appears.
+
+
+3️⃣ Data Differences (Huge Cause of Prod Failures)
+Dev:
+Small datasets
+Clean data
+Rare edge cases
+
+Prod:
+Large datasets
+Corrupt / unexpected data
+Edge cases everywhere
+
+Example:
+Query works on 100 rows
+Times out on 10 million rows
+
+💡 DevOps truth
+Production data is always more hostile than test data.
+
+
+4️⃣ Load & Concurrency (Dev Is Too Quiet)
+Dev:
+Single user
+No contention
+No concurrency stress
+
+Prod:
+Thousands of concurrent users
+Race conditions
+Lock contention
+Connection pool exhaustion
+
+Example:
+App works for 1 user
+Fails when 100 users hit it at once
+
+💡 Key insight
+Most bugs only appear under load.
+
+
+5️⃣ External Dependencies Behave Differently
+Dev:
+Mocked services
+No failures
+Infinite retries
+
+Prod:
+Real services
+Rate limits
+Timeouts
+Partial failures
+
+Example:
+API never fails in dev
+Intermittent failures in prod → cascade
+
+💡 System design lesson
+Production dependencies will fail — dev ones usually don’t.
+
+
+6️⃣ Security & Permissions (Often Ignored)
+Dev:
+Admin access
+Open permissions
+No IAM restrictions
+
+Prod:
+Least privilege
+Tight security
+Network ACLs
+
+Example:
+Dev app can access everything
+Prod app gets “permission denied”
+
+💡 DevOps reality
+Security is lenient in dev, strict in prod — and that breaks code.
+
+
+✅ Final Senior‑Level Answer (Interview‑Ready)
+If asked in an interview, this is the perfect answer:
+“Works in dev but fails in prod” happens because dev and prod environments differ in configuration, data volume, traffic patterns, security restrictions, network latency, and dependency behavior. 
+These differences expose assumptions in the code and system design that were never tested in development.
