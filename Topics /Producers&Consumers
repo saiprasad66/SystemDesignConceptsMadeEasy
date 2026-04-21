@@ -1,0 +1,87 @@
+🔹 Producer
+A producer is a component that creates data or events.
+It sends something.
+🔹 Consumer
+A consumer is a component that receives and processes data or events.
+It reads something.
+
+✅ Simple real‑life analogy
+📦 Amazon order system
+You place an order → Producer
+Order queue → buffer
+Warehouse system processes order → Consumer
+Producer does not care when or how the consumer processes it.
+
+
+✅ Producers & Consumers in Software Systems
+1️⃣ Messaging / Event Systems (Most common)
+Example: Azure Service Bus / Kafka / Event Hub
+[Producer] → [Queue / Topic] → [Consumer]
+
+Producer:
+App sending messages
+API publishing events
+
+Consumer:
+Worker service
+Background job
+Analytics processor
+
+✅ Decoupled
+✅ Scalable
+✅ Fault‑tolerant
+
+2️⃣ Database Context (Important for You)
+Producer
+Application writing to DB
+INSERT / UPDATE / DELETE
+
+Consumer
+Application reading from DB
+SELECT queries
+Reports
+Downstream services
+
+Example:
+Checkout service writes order → Producer
+Billing service reads order → Consumer
+
+
+3️⃣ API Context
+Producer
+Client calling an API
+Mobile app / frontend / external tenant
+
+Consumer
+Backend service handling the request
+
+Example:
+Tenant A floods API → Producer misbehaves
+Backend + DB → Consumers get overloaded
+
+This is where throttling and isolation matter.
+✅ Why Producers & Consumers Matter (Operationally)
+Key problem
+Producers can generate work faster than consumers can handle.
+
+If unchecked:
+Queues grow
+DB saturates
+Latency spikes
+Errors occur
+✅ This is the root cause of most outages
+
+✅ Where Throttling Fits (Connect the dots)
+Component            Role           Protection 
+API client          Producer        Rate limiting
+App service         Producer        Concurrency limits
+Message queue       Buffer          Backpressure 
+DB                  Consumer        Connection limits
+💡 You throttle producers to protect consumers
+Never the other way around.
+
+
+
+Tenants → Producers
+API → Consumer
+DB → Downstre
