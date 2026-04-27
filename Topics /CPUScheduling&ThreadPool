@@ -1,0 +1,110 @@
+1️⃣ What is CPU Scheduling
+First principle
+CPU is finite.
+1 CPU core → runs 1 thread at a time
+Multiple cores → multiple threads, but still limited
+
+So the OS needs a scheduler.
+
+What is CPU scheduling?
+CPU scheduling = how the kernel decides which thread runs next
+The kernel:
+Keeps a run queue of runnable threads
+Picks one
+Runs it for a short time slice (milliseconds)
+Switches to another
+
+This happens thousands of times per second.
+
+States of a thread
+A thread can be in one of these states:
+
+State                           Meaning 
+Running                        Currently on CPU 
+Runnable                       Ready waiting for CPU
+Blocked/Waiting                Waiting for I/O (DB, disk, network)
+
+⚠️ Runnable threads compete for CPU
+Why CPU scheduling becomes a problem under load
+Under high traffic:
+Too many runnable threads
+CPU switches constantly
+Cache misses increase
+Real work slows down
+
+This is called CPU thrashing.
+
+Key SRE insight
+CPU is not slow — contention makes it slow
+
+2️⃣ What is a Thread Pool (AND WHY IT EXISTS)
+Naive idea (wrong)
+Each request → create a new thread
+
+Why this fails:
+Each thread needs stack memory
+Each thread adds scheduler overhead
+Memory + CPU explode
+
+
+Thread Pool (correct model)
+A thread pool is:
+A fixed number of worker threads
+Reused for requests
+
+Example:
+Max threads = 200
+
+Behavior:
+First 200 requests → get threads
+Request 201 → waits or rejected
+
+
+Why thread pools save systems
+Because they:
+✅ Limit concurrency
+✅ Limit memory usage
+✅ Limit CPU contention
+✅ Force backpressure
+This prevents cascading failure.
+
+Key SRE insight
+Unlimited concurrency = guaranteed outage
+
+--------------------------------------------------------------------------------------------------------------
+Mapping to top / htop
+Now everything clicks.
+
+CPU %
+High CPU + slow app
+→ Too many runnable threads
+Moderate CPU + timeouts
+→ Threads blocked (DB, I/O)
+
+
+Load Average (CRITICAL)
+Load average = Number of runnable + waiting threads
+
+Rule of thumb:
+Load ≈ CPU cores → healthy
+Load >> CPU cores → saturation
+
+This maps directly to CPU scheduling pressure.
+
+Memory (RES)
+Memory includes:
+Stack memory (threads)
+Heap memory (objects)
+Kernel buffers (sockets)
+
+Sudden growth?
+→ Thread explosion or memory leak
+
+Thread count
+High thread count =
+High stack memory usage
+High scheduler overhead
+Poor performance
+
+
+
