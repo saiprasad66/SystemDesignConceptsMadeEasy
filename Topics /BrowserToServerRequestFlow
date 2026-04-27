@@ -1,0 +1,335 @@
+
+#PART 1: What a Server Really Is (Very First Principle)
+
+A **server is just a computer**, like your laptop, but:
+
+*   No screen
+*   No keyboard
+*   Runs **24×7**
+*   Listens to requests from the network
+
+Inside *every* server (Linux or Windows) are only **4 important physical things**:
+
+1.  **CPU** – brain (does calculations)
+2.  **Memory (RAM)** – short‑term working space
+3.  **Disk** – long‑term storage
+4.  **Network card (NIC)** – talks to the outside world
+
+Everything else is software.
+
+# PART 2: NIC – Network Interface Card (Very Important)
+
+### What is NIC?
+
+**NIC = Network Interface Card**
+
+Think of NIC like:
+👉 **The mouth and ears of the server**
+
+*   It receives data from the internet
+*   It sends responses back
+
+When someone hits a website:
+
+    Browser → Internet → NIC → Server
+
+### Under high traffic:
+
+*   Too many people talk at once
+*   NIC gets flooded with data
+*   It passes data to the OS (kernel)
+
+NIC itself is fast, but it depends on what comes next.
+
+***
+
+# PART 3: Kernel – The Boss of the Operating System
+
+### What is the Kernel?
+
+Kernel is the **core of Linux/Windows**.
+
+Think of kernel as:
+👉 **Traffic police + manager + security guard**
+
+It controls:
+
+*   CPU time
+*   Memory
+*   Network
+*   Disk
+*   Processes
+
+Applications are **NOT allowed** to touch hardware directly.  
+They **must ask the kernel**.
+
+***
+
+# PART 4: From NIC to Application (Simplified Flow)
+
+When traffic comes:
+
+    Internet
+      ↓
+    NIC
+      ↓
+    Kernel (network stack)
+      ↓
+    Socket
+      ↓
+    Application
+
+Now we’ll explain the missing words.
+
+***
+
+# PART 5: Socket – The “Pipe” Between Network & Program
+
+### What is a socket?
+
+A **socket** is like a **pipe**.
+
+*   One end: client (browser)
+*   Other end: server application
+
+Example:
+
+*   Browser sends request
+*   Request enters socket
+*   App reads data from socket
+
+Each connection usually = **one socket**
+
+### Important:
+
+Sockets need **memory**.
+Too many sockets = too much memory.
+
+***
+
+# PART 6: Process – Running Program
+
+### What is a Process?
+
+A **process** is:
+👉 A running program in memory
+
+Examples:
+
+*   `nginx`
+*   `java`
+*   `python`
+*   `dotnet`
+
+Each process gets:
+
+*   Its own memory
+*   Its own data
+*   Some CPU time
+
+***
+
+# PART 7: Thread – Workers Inside a Process
+
+### What is a Thread?
+
+Think like this:
+
+*   **Process** = Factory
+*   **Threads** = Workers inside the factory
+
+Each request is usually handled by **one thread**.
+
+So:
+
+    100 requests → 100 threads
+
+***
+
+# PART 8: Stack Memory (VERY IMPORTANT)
+
+### What is Stack Memory?
+
+Each **thread** has a **stack**.
+
+Stack stores:
+
+*   Function calls
+*   Local variables
+*   Temporary data
+
+Example:
+
+```text
+function A()
+  function B()
+    function C()
+```
+
+These go onto the **stack**.
+
+### Key fact:
+
+*   Stack size is **fixed per thread**
+*   Linux default ≈ **8 MB per thread**
+
+So:
+
+    1000 threads → ~8 GB virtual memory
+
+Even if not fully used, it is **reserved**.
+
+***
+
+# PART 9: Heap Memory (VERY IMPORTANT)
+
+### What is Heap?
+
+**Heap** is shared memory inside a process.
+
+Used for:
+
+*   Objects
+*   Request data
+*   Caches
+*   Buffers
+
+Languages like:
+
+*   Java
+*   .NET
+*   Python
+
+Use heap **heavily**.
+
+### Under traffic:
+
+*   More requests
+*   More objects
+*   Heap grows fast
+
+If heap fills ⇒ **Out Of Memory**
+
+***
+
+# PART 10: Virtual Memory – Illusion of Big Memory
+
+### What is Virtual Memory?
+
+OS lies to programs 😄 (in a good way).
+
+Each process thinks:
+
+> “I have LOTS of memory”
+
+But actually:
+
+*   Real RAM is limited
+*   OS maps virtual → physical
+
+This mapping is managed by kernel.
+
+### Problem:
+
+*   Too many processes/threads
+*   Kernel bookkeeping explodes
+*   Performance collapses
+
+***
+
+# PART 11: Page Cache – Disk Speed Trick
+
+Disk is **slow**. RAM is **fast**.
+
+So kernel does this:
+
+*   Reads disk data
+*   Keeps copy in RAM
+*   This copy = **page cache**
+
+Used for:
+
+*   Logs
+*   Files
+*   Libraries
+
+### Under memory pressure:
+
+*   Kernel drops page cache
+*   Disk reads increase
+*   Everything slows down
+
+***
+
+# PART 12: CPU – Why It Suddenly Hits 100%
+
+CPU does:
+
+*   Application logic
+*   Thread switching
+*   Garbage collection
+*   Kernel work
+
+### High traffic causes:
+
+*   Too many runnable threads
+*   CPU switches between them
+*   Wastes time switching instead of working
+
+This is why:
+
+> 1000 slow threads is worse than 50 fast threads
+
+***
+
+# PART 13: Putting Everything Together (ONE REQUEST)
+
+Now finally, one complete picture:
+
+    1. User sends request
+    2. NIC receives packets
+    3. Kernel processes network data
+    4. Socket created
+    5. Application thread picks request
+    6. Stack memory used
+    7. Heap memory allocated
+    8. CPU executes code
+    9. Response sent back via socket & NIC
+
+***
+
+# PART 14: What High Traffic REALLY Means
+
+High traffic means:
+
+*   Too many sockets
+*   Too many threads
+*   Too much stack memory
+*   Too much heap usage
+*   Too much CPU switching
+*   Kernel under pressure
+
+Eventually:
+
+*   Threads queue up
+*   Memory fills
+*   CPU thrashes
+*   Requests timeout
+*   Server looks “DOWN”
+
+***
+
+# PART 15: Simple Mental Model (Keep This Forever)
+
+✅ Server = Computer  
+✅ NIC = Mouth/Ear  
+✅ Kernel = Boss  
+✅ Process = Factory  
+✅ Thread = Worker  
+✅ Stack = Worker backpack  
+✅ Heap = Shared storage room  
+✅ Too many workers = chaos
+
+***
+
+
